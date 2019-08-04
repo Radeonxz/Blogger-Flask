@@ -53,5 +53,5 @@ def login():
         login_user(user, remember=form.remember.data)
         return redirect(url_for('home'))
       else:
-        flash('Login Unsuccessful. Please check credentials.', 'danger')
+        flash('Login Unsuccessful. Please check your credentials.', 'danger')
   return render_template('login.html', title='Login', form=form)
