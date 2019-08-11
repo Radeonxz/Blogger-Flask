@@ -7,24 +7,25 @@ from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, Post
 from flaskblog.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
 
-posts = [
-  {
-    'author': 'test1',
-    'title': 'title1',
-    'content': 'content1',
-    'date_posted': '2019-01-01'
-  },
-  {
-    'author': 'test2',
-    'title': 'title2',
-    'content': 'content2',
-    'date_posted': '2019-02-02'
-  }
-]
+# posts = [
+#   {
+#     'author': 'test1',
+#     'title': 'title1',
+#     'content': 'content1',
+#     'date_posted': '2019-01-01'
+#   },
+#   {
+#     'author': 'test2',
+#     'title': 'title2',
+#     'content': 'content2',
+#     'date_posted': '2019-02-02'
+#   }
+# ]
 
 @app.route('/')
 @app.route('/home')
 def home():
+  posts = Post.query.all()
   return render_template('home.html', posts=posts)
 
 @app.route('/about')
@@ -107,6 +108,14 @@ def account():
 def new_post():
   form = PostForm()
   if form.validate_on_submit():
+    post = Post(title=form.title.data, content=form.content.data, author=current_user)
+    db.session.add(post)
+    db.session.commit()
     flash('Your post has been created!', 'success')
     return redirect(url_for('home'))
   return render_template('create_post.html', title='New Post', form=form)
+
+  @app.route('/post/<int:post_id>')
+  def post(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template('post.html', title=post.title, post=post)
